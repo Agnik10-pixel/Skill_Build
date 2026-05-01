@@ -319,16 +319,21 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // Note: express version of fallback. Assuming standard setup.
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
+    // Production: serve static files from dist/client
+    const clientPath = path.join(process.cwd(), 'dist');
+    app.use(express.static(clientPath));
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
+  // Fallback to index.html for SPA routing
+  app.get('*', (req, res) => {
+    if (process.env.NODE_ENV === "production") {
+      res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+    }
+  });
+
+  const port = process.env.PORT || PORT;
+  app.listen(port, "0.0.0.0", () => {
+    console.log(`Server running on http://0.0.0.0:${port}`);
   });
 }
 
