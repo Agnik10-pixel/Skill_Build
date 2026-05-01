@@ -14,7 +14,7 @@ app.use(express.json());
 
 // Set up sessions for simple auth
 app.use(session({
-  secret: 'skillsbuild-secret-key-123',
+  secret: process.env.SESSION_SECRET || 'skillsbuild-secret-key-123',
   resave: false,
   saveUninitialized: false,
 }));
