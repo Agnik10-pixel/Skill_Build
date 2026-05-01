@@ -319,12 +319,11 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // Production: serve static files from dist/client
-    const clientPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(clientPath));
+    // Production: serve static files from dist
+    app.use(express.static(path.join(process.cwd(), 'dist')));
   }
 
-  // Fallback to index.html for SPA routing
+  // Catch-all for SPA routing - must be after static files
   app.get('*', (req, res) => {
     if (process.env.NODE_ENV === "production") {
       res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
@@ -338,3 +337,6 @@ async function startServer() {
 }
 
 startServer();
+
+// Export for Vercel Serverless
+export default app;
